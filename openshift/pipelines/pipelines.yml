@@ -1,0 +1,7 @@
+- build:
+    db: false
+    mq: false
+    wiremock: false
+    promote: false    
+    tests: false    
+

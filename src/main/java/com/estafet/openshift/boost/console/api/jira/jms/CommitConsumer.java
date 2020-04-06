@@ -15,6 +15,7 @@ import java.util.List;
 public class CommitConsumer {
 
     public final static String TOPIC = "commit.topic";
+    public final static String TASK_MANAGER_VALUE = "jira";
 
     private Tracer tracer;
     private JiraService jiraService;
@@ -22,7 +23,7 @@ public class CommitConsumer {
 
     @JmsListener(destination = TOPIC, containerFactory = "myFactory")
     public void onMessage(String message) {
-//    	if (System.getenv("TASK_MANAGER").equals("jira")) {
+    	if (System.getenv("TASK_MANAGER").equals("TASK_MANAGER_VALUE")) {
             CommitMessage commitMessage = CommitMessage.fromJSON(message);
             String issueId = getIssueId(commitMessage.getMessage());
             if(issueId==null){
@@ -36,26 +37,31 @@ public class CommitConsumer {
                     }
                 }
             }    		
-//    	}
+    	}
     }
 
     public String getIssueId(String message) {
-        // dneneisinsisn  kffkfkfkf [JIRA FG_8877]
-        return "RHYT-100";
-/*        String regex = "";
+        String regex= "^(\\[JIRA):{1}[^:]+\\]$";
         String[] splitString = (message.split("\\s+"));
         List<String> matchesList = new ArrayList<>();
+
         for (String string : splitString) {
             if(string.matches(regex)){
-                matchesList.add(string);
+                String newString = string.replaceAll("\\[|\\]","");
+                matchesList.add(newString);
             }
         }
         if (matchesList.size()==1){
-            String url = matchesList.get(0);
-            return url+".json?";
-        } else {
-            return null;
-        }*/
+            String[] stringMass = (matchesList.get(0).split(":"));
+            if(stringMass.length==2){
+                for (String mass : stringMass) {
+                    if (!mass.equals(TASK_MANAGER_VALUE.toUpperCase())) {
+                        return mass;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void sendUnmatchedCommit(CommitMessage commitMessage) {

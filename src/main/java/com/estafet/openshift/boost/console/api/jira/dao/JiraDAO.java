@@ -18,8 +18,6 @@ public class JiraDAO {
     private IssueDetailsProducer issueDetailsProducer;
 
     public void getJiraIssueDetails(String issueId, CommitMessage commitMessage) {
-//        TODO https://estafet.atlassian.net/rest/api/3/search?jql=key=RHYT-100&fields=key,summary,description,issuetype,summary,updated,status
-//        TODO https://estafet.atlassian.net/rest/api/3/issue/RHYT-100?fields=key,summary,description,issuetype,summary,updated,status
 //        TODO add system env
         String auth = "iryna.poplavska@estafet.com:gZwb6zR5KrWKjQ01dcQP7D9F";
         String url = "https://estafet.atlassian.net/rest/api/3/issue/" + issueId+"?fields=key,summary,description,issuetype,summary,updated,status";
@@ -45,7 +43,7 @@ public class JiraDAO {
 
         FeatureStatus status = getFeatureStatus(issue);
 
-//      TODO update feature value
+//      TODO update feature value and add verification that getFields() is not null
         return FeatureMessage.builder()
                 .setFeatureId(issue.getId())
                 .setCommitId(commitMessage.getCommitId())

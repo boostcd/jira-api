@@ -22,6 +22,9 @@ public class IssueFields {
     @SerializedName("status")
     private IssueStatus status;
 
+    @SerializedName("parent")
+    private ParentIssue parent;
+
     public IssueFields(){
 
     }
@@ -65,5 +68,13 @@ public class IssueFields {
 
     public void setStatus(IssueStatus status) {
         this.status = status;
+    }
+
+    public ParentIssue getParent() {
+        return parent;
+    }
+
+    public void setParent(ParentIssue parent) {
+        this.parent = parent;
     }
 }

@@ -2,10 +2,12 @@ package com.estafet.openshift.boost.console.api.jira.dao;
 
 import com.estafet.openshift.boost.console.api.jira.JiraUtils;
 import com.estafet.openshift.boost.console.api.jira.jms.IssueDetailsProducer;
+import com.estafet.openshift.boost.console.api.jira.jms.UnmatchedCommitProducer;
 import com.estafet.openshift.boost.console.api.jira.model.Issue;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import com.estafet.openshift.boost.messages.features.FeatureMessage;
 import com.estafet.openshift.boost.messages.features.FeatureStatus;
+import com.estafet.openshift.boost.messages.features.UnmatchedCommitMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,40 +18,90 @@ public class JiraDAO {
 
     @Autowired
     private IssueDetailsProducer issueDetailsProducer;
+    @Autowired
+    private UnmatchedCommitProducer unmatchedCommitProducer;
 
     public void getJiraIssueDetails(String issueId, CommitMessage commitMessage) {
 //        TODO add system env
         String auth = "iryna.poplavska@estafet.com:gZwb6zR5KrWKjQ01dcQP7D9F";
-        String url = "https://estafet.atlassian.net/rest/api/3/issue/" + issueId+"?fields=key,summary,description,issuetype,summary,updated,status";
+        String url = getUrl(issueId);
+        String stringIssue = getIssueDetails(auth, url);
+        Issue issue = getIssue(stringIssue);
+
+        if(issue!=null && issue.getFields()!=null && issue.getFields().getIssueType()!=null ){
+            if(isValidIssue(issue.getFields().getIssueType().getValue())){
+                processIssue(commitMessage, issue, auth);
+            } else {
+                sendUnmatchedCommit(commitMessage);
+            }
+        }
+    }
+
+    private void sendUnmatchedCommit(CommitMessage commitMessage) {
+        unmatchedCommitProducer.sendMessage(UnmatchedCommitMessage.builder()
+                .setCommitId(commitMessage.getCommitId())
+                .setRepo(commitMessage.getRepo())
+                .build());
+    }
+
+
+    private Issue getIssue(String stringIssue) {
+        return Issue.fromJSON(stringIssue);
+    }
+
+    private void processIssue(CommitMessage commitMessage, Issue issue, String auth) {
+        String issueType = issue.getFields().getIssueType().getValue();
+        if(isStoryOrBug(issueType)){
+            FeatureMessage featureMessage = mapping(issue, commitMessage);
+            issueDetailsProducer.sendMessage(featureMessage);
+        }
+        if(issueType.equals("Sub-task")){
+            if( issue.getFields().getParent()!=null && issue.getFields().getParent().getId()!=null){
+                String parentKey = issue.getFields().getParent().getId();
+                String stringStoryIssue = getIssueDetails(auth, getUrl(parentKey));
+                Issue storyIssue = getIssue(stringStoryIssue);
+                processIssue(commitMessage, storyIssue, auth);
+            }
+        }
+    }
+
+    public Boolean isValidIssue(String issueType){
+        return issueType.equals("Story") || issueType.equals("Bug") || issueType.equals("Sub-task");
+    }
+
+    public Boolean isStoryOrBug(String issueType){
+        return issueType.equals("Story") || issueType.equals("Bug");
+    }
+
+    private String getIssueDetails(String auth, String url) {
         String stringIssue = null;
         try {
             stringIssue = JiraUtils.invokeGetMethod(auth,url);
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-
-        Issue issue = Issue.fromJSON(stringIssue);
-
-        FeatureMessage featureMessage = mapping(issue, commitMessage, url);
-        issueDetailsProducer.sendMessage(featureMessage);
-        System.out.println("feature mess = " + featureMessage.toJSON());
-
+        return stringIssue;
     }
 
-    public FeatureMessage mapping(Issue issue, CommitMessage commitMessage, String url) {
-        if(issue == null){
+    private String getUrl(String issueId) {
+        return "https://estafet.atlassian.net/rest/api/3/issue/" + issueId+"?fields=key,summary,description,issuetype," +
+                "summary,updated,status,parent";
+    }
+
+    public FeatureMessage mapping(Issue issue, CommitMessage commitMessage) {
+        if(issue == null || issue.getFields()==null){
             return null;
         }
 
         FeatureStatus status = getFeatureStatus(issue);
 
-//      TODO update feature value and add verification that getFields() is not null
+//      TODO update featureURL value
         return FeatureMessage.builder()
                 .setFeatureId(issue.getId())
                 .setCommitId(commitMessage.getCommitId())
                 .setRepo(commitMessage.getRepo())
                 .setTitle(issue.getFields().getTitle())
-                .setDescription(issue.getFields().getDescription())
+                .setDescription("")
                 .setStatus(status)
                 .setLastUpdated(issue.getFields().getLastUpdated())
                 .setFeatureURL("https://estafet.atlassian.net"+"/browse/"+issue.getId())
@@ -58,7 +110,7 @@ public class JiraDAO {
     }
 
     private FeatureStatus getFeatureStatus(Issue issue) {
-        if(issue.getFields() == null || (issue.getFields()!= null && issue.getFields().getStatus() == null)){
+        if(issue.getFields().getStatus() == null){
             return null;
         }
 

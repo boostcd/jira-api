@@ -50,33 +50,34 @@ public class JiraDAO {
                 .setFeatureId(issue.getId())
                 .setCommitId(commitMessage.getCommitId())
                 .setRepo(commitMessage.getRepo())
-                .setTitle(issue.getTitle())
-                .setDescription(issue.getDescription())
+                .setTitle(issue.getFields().getTitle())
+                .setDescription(issue.getFields().getDescription())
                 .setStatus(status)
-                .setLastUpdated(issue.getLastUpdated())
+                .setLastUpdated(issue.getFields().getLastUpdated())
                 .setFeatureURL("https://estafet.atlassian.net"+"/browse/"+issue.getId())
                 .build();
 
     }
 
     private FeatureStatus getFeatureStatus(Issue issue) {
-        if(issue.getStatus() == null){
+        if(issue.getFields() == null || (issue.getFields()!= null && issue.getFields().getStatus() == null)){
             return null;
         }
+
         FeatureStatus status = null;
 
-        if(issue.getStatus().equals(FeatureStatus.DONE.getValue())){
+        if(issue.getFields().getStatus().getValue().equals(FeatureStatus.DONE.getValue())){
             status=FeatureStatus.DONE;
         }
-        if(issue.getStatus().equals(FeatureStatus.IN_PROGRESS.getValue())){
+        if(issue.getFields().getStatus().getValue().equals(FeatureStatus.IN_PROGRESS.getValue())){
             status=FeatureStatus.IN_PROGRESS;
         }
 
-        if(issue.getStatus().equals(FeatureStatus.NOT_STARTED.getValue())){
+        if(issue.getFields().getStatus().getValue().equals(FeatureStatus.NOT_STARTED.getValue())){
             status=FeatureStatus.NOT_STARTED;
         }
 
-        if(issue.getStatus().equals(FeatureStatus.BLOCKED.getValue())){
+        if(issue.getFields().getStatus().getValue().equals(FeatureStatus.BLOCKED.getValue())){
             status=FeatureStatus.BLOCKED;
         }
         return status;

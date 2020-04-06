@@ -23,7 +23,7 @@ public class CommitConsumer {
 
     @JmsListener(destination = TOPIC, containerFactory = "myFactory")
     public void onMessage(String message) {
-    	if (System.getenv("TASK_MANAGER").equals("TASK_MANAGER_VALUE")) {
+    	if (System.getenv("TASK_MANAGER").equals(TASK_MANAGER_VALUE)) {
             CommitMessage commitMessage = CommitMessage.fromJSON(message);
             String issueId = getIssueId(commitMessage.getMessage());
             if(issueId==null){

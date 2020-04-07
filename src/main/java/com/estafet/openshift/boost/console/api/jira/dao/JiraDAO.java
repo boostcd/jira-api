@@ -23,7 +23,7 @@ public class JiraDAO {
 
     public void getJiraIssueDetails(String issueId, CommitMessage commitMessage) {
 
-        String auth = getJiraApiKey() +":"+getJiraAccessToken();
+        String auth = getJiraUsername() +":"+getJiraAccessToken();
         String url = getUrl(issueId);
         String stringIssue = getIssueDetails(auth, url);
 
@@ -141,8 +141,8 @@ public class JiraDAO {
         return status;
     }
 
-    private String getJiraApiKey() {
-        return System.getenv("JIRA_API_KEY");
+    private String getJiraUsername() {
+        return System.getenv("JIRA_USERNAME");
     }
 
     private String getJiraAccessToken() {

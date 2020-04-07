@@ -36,7 +36,7 @@ parameters:
   name: JIRA_ACCESS_TOKEN
   required: true     
 - description: Defines the jira api key
-  name: JIRA_API_KEY
+  name: JIRA_USERNAME
   required: true          
 - description: Defines the tasks manager
   name: TASK_MANAGER
@@ -85,8 +85,8 @@ objects:
                 value: ${PRODUCT}          
               - name: JIRA_ACCESS_TOKEN
                 value: ${JIRA_ACCESS_TOKEN}
-              - name: JIRA_API_KEY
-                value: ${JIRA_API_KEY}
+              - name: JIRA_USERNAME
+                value: ${JIRA_USERNAME}
               - name: JIRA_BASE_URL
                 value: ${JIRA_BASE_URL}
               - name: JAEGER_SAMPLER_TYPE

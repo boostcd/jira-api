@@ -4,4 +4,6 @@ import com.estafet.openshift.boost.messages.features.CommitMessage;
 
 public interface JiraService {
     void getJiraIssueDetails(String issueId, CommitMessage commitMessage);
+
+    void sendUnmatchedCommit(CommitMessage commitMessage);
 }

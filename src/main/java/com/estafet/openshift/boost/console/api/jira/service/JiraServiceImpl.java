@@ -15,6 +15,11 @@ public class JiraServiceImpl implements JiraService {
         jiraDAO.getJiraIssueDetails(issueId,commitMessage);
     }
 
+    @Override
+    public void sendUnmatchedCommit(CommitMessage commitMessage) {
+        jiraDAO.sendUnmatchedCommit(commitMessage);
+    }
+
     @Autowired
     public void setJiraDAO(JiraDAO jiraDAO) {
         this.jiraDAO = jiraDAO;

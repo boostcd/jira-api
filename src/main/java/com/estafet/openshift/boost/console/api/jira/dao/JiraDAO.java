@@ -16,28 +16,35 @@ import javax.naming.AuthenticationException;
 @Repository
 public class JiraDAO {
 
-    @Autowired
     private IssueDetailsProducer issueDetailsProducer;
-    @Autowired
     private UnmatchedCommitProducer unmatchedCommitProducer;
+    public final static String JIRA_ISSUE_API_BASE_URL = "https://estafet.atlassian.net/rest/api/3/issue/";
+    public final static String JIRA_ISSUE_API_FIELDS ="?fields=key,summary,description,issuetype,summary,updated,status,parent";
 
     public void getJiraIssueDetails(String issueId, CommitMessage commitMessage) {
-//        TODO add system env
-        String auth = "iryna.poplavska@estafet.com:gZwb6zR5KrWKjQ01dcQP7D9F";
+
+        String auth = getJiraApiKey() +":"+getJiraAccessToken();
         String url = getUrl(issueId);
         String stringIssue = getIssueDetails(auth, url);
+
+        if(stringIssue == null){
+            return;
+        }
         Issue issue = getIssue(stringIssue);
 
-        if(issue!=null && issue.getFields()!=null && issue.getFields().getIssueType()!=null ){
-            if(isValidIssue(issue.getFields().getIssueType().getValue())){
-                processIssue(commitMessage, issue, auth);
-            } else {
-                sendUnmatchedCommit(commitMessage);
-            }
+        if(issue == null || issue.getFields() == null || issue.getFields().getIssueType()==null){
+            sendUnmatchedCommit(commitMessage);
+            return;
+        }
+
+        if(isValidIssue(issue.getFields().getIssueType().getValue())){
+            processIssue(commitMessage, issue, auth);
+        } else {
+            sendUnmatchedCommit(commitMessage);
         }
     }
 
-    private void sendUnmatchedCommit(CommitMessage commitMessage) {
+    public void sendUnmatchedCommit(CommitMessage commitMessage) {
         unmatchedCommitProducer.sendMessage(UnmatchedCommitMessage.builder()
                 .setCommitId(commitMessage.getCommitId())
                 .setRepo(commitMessage.getRepo())
@@ -58,18 +65,21 @@ public class JiraDAO {
         if(issueType.equals("Sub-task")){
             if( issue.getFields().getParent()!=null && issue.getFields().getParent().getId()!=null){
                 String parentKey = issue.getFields().getParent().getId();
-                String stringStoryIssue = getIssueDetails(auth, getUrl(parentKey));
-                Issue storyIssue = getIssue(stringStoryIssue);
+                String stringParentIssue = getIssueDetails(auth, getUrl(parentKey));
+                if(stringParentIssue == null){
+                    return;
+                }
+                Issue storyIssue = getIssue(stringParentIssue);
                 processIssue(commitMessage, storyIssue, auth);
             }
         }
     }
 
-    public Boolean isValidIssue(String issueType){
+    private Boolean isValidIssue(String issueType){
         return issueType.equals("Story") || issueType.equals("Bug") || issueType.equals("Sub-task");
     }
 
-    public Boolean isStoryOrBug(String issueType){
+    private Boolean isStoryOrBug(String issueType){
         return issueType.equals("Story") || issueType.equals("Bug");
     }
 
@@ -84,27 +94,25 @@ public class JiraDAO {
     }
 
     private String getUrl(String issueId) {
-        return "https://estafet.atlassian.net/rest/api/3/issue/" + issueId+"?fields=key,summary,description,issuetype," +
-                "summary,updated,status,parent";
+        return JIRA_ISSUE_API_BASE_URL + issueId+JIRA_ISSUE_API_FIELDS;
     }
 
-    public FeatureMessage mapping(Issue issue, CommitMessage commitMessage) {
+    private FeatureMessage mapping(Issue issue, CommitMessage commitMessage) {
         if(issue == null || issue.getFields()==null){
             return null;
         }
 
         FeatureStatus status = getFeatureStatus(issue);
 
-//      TODO update featureURL value
         return FeatureMessage.builder()
                 .setFeatureId(issue.getId())
                 .setCommitId(commitMessage.getCommitId())
                 .setRepo(commitMessage.getRepo())
                 .setTitle(issue.getFields().getTitle())
-                .setDescription("")
+                .setDescription(issue.getFields().getDescription())
                 .setStatus(status)
                 .setLastUpdated(issue.getFields().getLastUpdated())
-                .setFeatureURL("https://estafet.atlassian.net"+"/browse/"+issue.getId())
+                .setFeatureURL(getJiraBaseUrl()+"/browse/"+issue.getId())
                 .build();
 
     }
@@ -131,5 +139,27 @@ public class JiraDAO {
             status=FeatureStatus.BLOCKED;
         }
         return status;
+    }
+
+    private String getJiraApiKey() {
+        return System.getenv("JIRA_API_KEY");
+    }
+
+    private String getJiraAccessToken() {
+        return System.getenv("JIRA_ACCESS_TOKEN");
+    }
+
+    private String getJiraBaseUrl() {
+        return System.getenv("JIRA_BASE_URL");
+    }
+
+    @Autowired
+    public void setIssueDetailsProducer(IssueDetailsProducer issueDetailsProducer) {
+        this.issueDetailsProducer = issueDetailsProducer;
+    }
+
+    @Autowired
+    public void setUnmatchedCommitProducer(UnmatchedCommitProducer unmatchedCommitProducer) {
+        this.unmatchedCommitProducer = unmatchedCommitProducer;
     }
 }

@@ -2,7 +2,6 @@ package com.estafet.openshift.boost.console.api.jira.jms;
 
 import com.estafet.openshift.boost.console.api.jira.service.JiraService;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
-import com.estafet.openshift.boost.messages.features.UnmatchedCommitMessage;
 import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
@@ -27,7 +26,7 @@ public class CommitConsumer {
             CommitMessage commitMessage = CommitMessage.fromJSON(message);
             String issueId = getIssueId(commitMessage.getMessage());
             if(issueId==null){
-                sendUnmatchedCommit(commitMessage);
+                jiraService.sendUnmatchedCommit(commitMessage);
             } else {
                 try {
                     jiraService.getJiraIssueDetails(issueId, commitMessage);
@@ -62,13 +61,6 @@ public class CommitConsumer {
             }
         }
         return null;
-    }
-
-    private void sendUnmatchedCommit(CommitMessage commitMessage) {
-        unmatchedCommitProducer.sendMessage(UnmatchedCommitMessage.builder()
-                .setCommitId(commitMessage.getCommitId())
-                .setRepo(commitMessage.getRepo())
-                .build());
     }
 
     @Autowired

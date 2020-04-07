@@ -40,7 +40,10 @@ parameters:
   required: true          
 - description: Defines the tasks manager
   name: TASK_MANAGER
-  required: true  
+  required: true
+- description: Defines the Jira's base url
+  name: JIRA_BASE_URL
+  required: true
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
@@ -84,6 +87,8 @@ objects:
                 value: ${JIRA_ACCESS_TOKEN}
               - name: JIRA_API_KEY
                 value: ${JIRA_API_KEY}
+              - name: JIRA_BASE_URL
+                value: ${JIRA_BASE_URL}
               - name: JAEGER_SAMPLER_TYPE
                 value: const
               - name: JAEGER_SAMPLER_PARAM

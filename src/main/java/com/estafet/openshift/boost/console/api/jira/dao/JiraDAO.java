@@ -46,6 +46,7 @@ public class JiraDAO {
 
     public void sendUnmatchedCommit(CommitMessage commitMessage) {
         unmatchedCommitProducer.sendMessage(UnmatchedCommitMessage.builder()
+        		.setMessage(commitMessage.getMessage())
                 .setCommitId(commitMessage.getCommitId())
                 .setRepo(commitMessage.getRepo())
                 .build());
@@ -113,6 +114,7 @@ public class JiraDAO {
                 .setStatus(status)
                 .setLastUpdated(issue.getFields().getLastUpdated())
                 .setFeatureURL(getJiraBaseUrl()+"/browse/"+issue.getId())
+                .setMessage(commitMessage.getMessage())
                 .build();
 
     }

@@ -2,12 +2,10 @@ package com.estafet.openshift.boost.console.api.jira.dao;
 
 import com.estafet.openshift.boost.console.api.jira.JiraUtils;
 import com.estafet.openshift.boost.console.api.jira.jms.IssueDetailsProducer;
-import com.estafet.openshift.boost.console.api.jira.jms.UnmatchedCommitProducer;
 import com.estafet.openshift.boost.console.api.jira.model.Issue;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import com.estafet.openshift.boost.messages.features.FeatureMessage;
 import com.estafet.openshift.boost.messages.features.FeatureStatus;
-import com.estafet.openshift.boost.messages.features.UnmatchedCommitMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +15,7 @@ import javax.naming.AuthenticationException;
 public class JiraDAO {
 
     private IssueDetailsProducer issueDetailsProducer;
-    private UnmatchedCommitProducer unmatchedCommitProducer;
+
     public final static String JIRA_ISSUE_API_BASE_URL = "https://estafet.atlassian.net/rest/api/3/issue/";
     public final static String JIRA_ISSUE_API_FIELDS ="?fields=key,summary,description,issuetype,summary,updated,status,parent";
 
@@ -32,25 +30,10 @@ public class JiraDAO {
         }
         Issue issue = getIssue(stringIssue);
 
-        if(issue == null || issue.getFields() == null || issue.getFields().getIssueType()==null){
-            sendUnmatchedCommit(commitMessage);
-            return;
-        }
-
         if(isValidIssue(issue.getFields().getIssueType().getValue())){
             processIssue(commitMessage, issue, auth);
-        } else {
-            sendUnmatchedCommit(commitMessage);
         }
     }
-
-    public void sendUnmatchedCommit(CommitMessage commitMessage) {
-        unmatchedCommitProducer.sendMessage(UnmatchedCommitMessage.builder()
-                .setCommitId(commitMessage.getCommitId())
-                .setRepo(commitMessage.getRepo())
-                .build());
-    }
-
 
     private Issue getIssue(String stringIssue) {
         return Issue.fromJSON(stringIssue);
@@ -158,8 +141,4 @@ public class JiraDAO {
         this.issueDetailsProducer = issueDetailsProducer;
     }
 
-    @Autowired
-    public void setUnmatchedCommitProducer(UnmatchedCommitProducer unmatchedCommitProducer) {
-        this.unmatchedCommitProducer = unmatchedCommitProducer;
-    }
 }

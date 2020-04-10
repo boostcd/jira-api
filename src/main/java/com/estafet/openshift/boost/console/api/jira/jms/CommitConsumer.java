@@ -18,24 +18,21 @@ public class CommitConsumer {
 
     private Tracer tracer;
     private JiraService jiraService;
-    private UnmatchedCommitProducer unmatchedCommitProducer;
 
     @JmsListener(destination = TOPIC, containerFactory = "myFactory")
     public void onMessage(String message) {
     	if (System.getenv("TASK_MANAGER").equals(TASK_MANAGER_VALUE)) {
             CommitMessage commitMessage = CommitMessage.fromJSON(message);
             String issueId = getIssueId(commitMessage.getMessage());
-            if(issueId==null){
-                jiraService.sendUnmatchedCommit(commitMessage);
-            } else {
-                try {
+            if(issueId != null){
+            	try {
                     jiraService.getJiraIssueDetails(issueId, commitMessage);
                 } finally {
                     if (tracer.activeSpan() != null) {
                         tracer.activeSpan().close();
                     }
                 }
-            }    		
+            }   		
     	}
     }
 
@@ -73,8 +70,4 @@ public class CommitConsumer {
         this.jiraService = jiraService;
     }
 
-    @Autowired
-    public void setUnmatchedCommitProducer(UnmatchedCommitProducer unmatchedCommitProducer) {
-        this.unmatchedCommitProducer = unmatchedCommitProducer;
-    }
 }

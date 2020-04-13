@@ -6,6 +6,8 @@ import com.estafet.openshift.boost.console.api.jira.model.Issue;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import com.estafet.openshift.boost.messages.features.FeatureMessage;
 import com.estafet.openshift.boost.messages.features.FeatureStatus;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,8 @@ import javax.naming.AuthenticationException;
 
 @Repository
 public class JiraDAO {
+
+    private static final Logger logger = LogManager.getLogger(JiraDAO.class);
 
     private IssueDetailsProducer issueDetailsProducer;
 
@@ -26,11 +30,12 @@ public class JiraDAO {
         String stringIssue = getIssueDetails(auth, url);
 
         if(stringIssue == null){
+            logger.warn("Issue with issueId =" + issueId + " was not found");
             return;
         }
         Issue issue = getIssue(stringIssue);
 
-        if(isValidIssue(issue.getFields().getIssueType().getValue())){
+        if(isValidIssue(issue, issueId) && isValidIssueType(issue.getFields().getIssueType().getValue())){
             processIssue(commitMessage, issue, auth);
         }
     }
@@ -58,7 +63,25 @@ public class JiraDAO {
         }
     }
 
-    private Boolean isValidIssue(String issueType){
+    private Boolean isValidIssue(Issue issue, String issueId){
+        if(issue == null){
+            logger.warn(" Jira's Issue Entity is null after converting from Json. Jira issueId = " + issueId);
+            return false;
+        }
+
+        if(issue.getFields() == null){
+            logger.warn(" fields collection is null for Jira issueId = " + issueId);
+            return false;
+        }
+
+        if( issue.getFields().getIssueType()==null){
+            logger.warn("Issue type is null for Jira issueId =" + issueId);
+            return false;
+        }
+        return true;
+    }
+
+    private Boolean isValidIssueType(String issueType){
         return issueType.equals("Story") || issueType.equals("Bug") || issueType.equals("Sub-task");
     }
 

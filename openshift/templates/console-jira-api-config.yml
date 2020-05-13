@@ -13,11 +13,18 @@ parameters:
   required: true
 - description: Defines max memory
   name: MAX_MEMORY
-  value: 500Mi
   required: true  
 - description: Defines min memory
   name: MIN_MEMORY
-  value: 100Mi
+  required: true
+- description: Defines max cpu
+  name: MAX_CPU
+  required: true  
+- description: Defines min memory
+  name: MIN_CPU
+  required: true
+- description: Defines number of replicas
+  name: REPLICAS
   required: true
 - description: Defines the namespace for the image stream
   name: DOCKER_NAMESPACE
@@ -32,18 +39,6 @@ parameters:
 - description: Defines the product that this template is related to
   name: PRODUCT
   required: true  
-- description: Defines the jira access token
-  name: JIRA_ACCESS_TOKEN
-  required: true     
-- description: Defines the jira api key
-  name: JIRA_USERNAME
-  required: true          
-- description: Defines the tasks manager
-  name: TASK_MANAGER
-  required: true
-- description: Defines the Jira's base url
-  name: JIRA_BASE_URL
-  required: true
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
@@ -55,7 +50,7 @@ objects:
     name: ${MICROSERVICE}
     namespace: ${NAMESPACE}
   spec:
-    replicas: 1
+    replicas: ${REPLICAS}
     revisionHistoryLimit: 10
     selector:
       app: ${MICROSERVICE}
@@ -80,29 +75,65 @@ objects:
         containers:
           - env:
               - name: TASK_MANAGER
-                value: ${TASK_MANAGER}
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: TASK_MANAGER
               - name: PRODUCT
-                value: ${PRODUCT}          
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: PRODUCT       
               - name: JIRA_ACCESS_TOKEN
-                value: ${JIRA_ACCESS_TOKEN}
+                valueFrom:
+                  secretKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JIRA_ACCESS_TOKEN                
               - name: JIRA_USERNAME
-                value: ${JIRA_USERNAME}
+                valueFrom:
+                  secretKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JIRA_USERNAME                
               - name: JIRA_BASE_URL
-                value: ${JIRA_BASE_URL}
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JIRA_BASE_URL
               - name: JAEGER_SAMPLER_TYPE
-                value: const
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JAEGER_SAMPLER_TYPE
               - name: JAEGER_SAMPLER_PARAM
-                value: '1'                
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JAEGER_SAMPLER_PARAM
               - name: JAEGER_SAMPLER_MANAGER_HOST_PORT
-                value: jaeger-agent.${NAMESPACE}.svc:5778
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JAEGER_SAMPLER_MANAGER_HOST_PORT
               - name: JAEGER_AGENT_HOST
-                value: jaeger-agent.${NAMESPACE}.svc           
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JAEGER_AGENT_HOST           
               - name: JBOSS_A_MQ_BROKER_PASSWORD
-                value: amq
+                valueFrom:
+                  secretKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JBOSS_A_MQ_BROKER_PASSWORD
               - name: JBOSS_A_MQ_BROKER_URL
-                value: 'tcp://broker-amq-tcp.${NAMESPACE}.svc:61616'
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JBOSS_A_MQ_BROKER_URL
               - name: JBOSS_A_MQ_BROKER_USER
-                value: amq
+                valueFrom:
+                  secretKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JBOSS_A_MQ_BROKER_USER 
             image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${MICROSERVICE}:${DOCKER_IMAGE_LABEL}
             imagePullPolicy: Always
             name: ${MICROSERVICE}
@@ -125,10 +156,10 @@ objects:
                 scheme: HTTP
             resources:
               limits:
-                cpu: '1'
+                cpu: ${MAX_CPU}
                 memory: ${MAX_MEMORY}
               requests:
-                cpu: 50m
+                cpu: ${MIN_CPU}
                 memory: ${MIN_MEMORY}
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File

@@ -99,6 +99,11 @@ objects:
                   configMapKeyRef:
                     name: ${MICROSERVICE} 
                     key: JIRA_BASE_URL
+              - name: JAEGER_SERVICE_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: ${MICROSERVICE} 
+                    key: JAEGER_SERVICE_NAME                    
               - name: JAEGER_SAMPLER_TYPE
                 valueFrom:
                   configMapKeyRef:

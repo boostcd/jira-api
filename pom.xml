@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.estafet.openshift.boost.console</groupId>
 	<artifactId>estafet-openshift-boost-console-api-jira</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>estafet-openshift-boost-console-api-jira</name>
 
 	<parent>
@@ -38,8 +38,4 @@
 			<version>20190722</version>
 		</dependency>
 	</dependencies>
-
-  <scm>
-    <tag>estafet-openshift-boost-console-api-jira-0.0.3</tag>
-  </scm>
 </project>

@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira;
+package com.estafet.boostcd.jira.api;
 
 import io.opentracing.Tracer;
 import io.opentracing.contrib.jms.spring.TracingJmsTemplate;

@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira.jms;
+package com.estafet.boostcd.jira.api.jms;
 
 import com.estafet.openshift.boost.messages.features.FeatureMessage;
 import org.springframework.beans.factory.annotation.Autowired;

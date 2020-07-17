@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira.model;
+package com.estafet.boostcd.jira.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

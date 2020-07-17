@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira;
+package com.estafet.boostcd.jira.api;
 
 import io.opentracing.*;
 import io.opentracing.contrib.jms.common.JmsTextMapExtractAdapter;

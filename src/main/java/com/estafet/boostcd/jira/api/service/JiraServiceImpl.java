@@ -1,6 +1,6 @@
-package com.estafet.openshift.boost.console.api.jira.service;
+package com.estafet.boostcd.jira.api.service;
 
-import com.estafet.openshift.boost.console.api.jira.dao.JiraDAO;
+import com.estafet.boostcd.jira.api.dao.JiraDAO;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

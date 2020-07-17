@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira.service;
+package com.estafet.boostcd.jira.api.service;
 
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 

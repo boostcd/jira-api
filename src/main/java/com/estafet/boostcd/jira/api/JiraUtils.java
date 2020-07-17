@@ -1,4 +1,4 @@
-package com.estafet.openshift.boost.console.api.jira;
+package com.estafet.boostcd.jira.api;
 
 import javax.naming.AuthenticationException;
 

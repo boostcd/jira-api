@@ -1,6 +1,6 @@
-package com.estafet.openshift.boost.console.api.jira.jms;
+package com.estafet.boostcd.jira.api.jms;
 
-import com.estafet.openshift.boost.console.api.jira.service.JiraService;
+import com.estafet.boostcd.jira.api.service.JiraService;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;

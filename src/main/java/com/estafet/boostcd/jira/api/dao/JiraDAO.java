@@ -1,8 +1,8 @@
-package com.estafet.openshift.boost.console.api.jira.dao;
+package com.estafet.boostcd.jira.api.dao;
 
-import com.estafet.openshift.boost.console.api.jira.JiraUtils;
-import com.estafet.openshift.boost.console.api.jira.jms.IssueDetailsProducer;
-import com.estafet.openshift.boost.console.api.jira.model.Issue;
+import com.estafet.boostcd.jira.api.JiraUtils;
+import com.estafet.boostcd.jira.api.jms.IssueDetailsProducer;
+import com.estafet.boostcd.jira.api.model.Issue;
 import com.estafet.openshift.boost.messages.features.CommitMessage;
 import com.estafet.openshift.boost.messages.features.FeatureMessage;
 import com.estafet.openshift.boost.messages.features.FeatureStatus;

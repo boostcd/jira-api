@@ -1,9 +1,10 @@
-package com.estafet.openshift.boost.console.api.jira.controller;
+package com.estafet.boostcd.jira.api.controller;
 
-import com.estafet.openshift.boost.commons.lib.model.API;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.estafet.boostcd.commons.model.API;
 
 @RestController
 public class JiraController {

@@ -11,7 +11,7 @@
 
 	<properties>
 		<microservice>console-jira-api</microservice>
-		<entity.package>com.estafet.openshift.boost.console.api.jira.model</entity.package>
+		<entity.package>com.estafet.boostcd.jira.api.model</entity.package>
 	</properties>
 
 	<dependencies>

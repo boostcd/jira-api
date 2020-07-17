@@ -1,14 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.estafet.openshift.boost.console</groupId>
-	<artifactId>estafet-openshift-boost-console-api-jira</artifactId>
+	<artifactId>jira-api</artifactId>
 	<version>0.0.6-SNAPSHOT</version>
-	<name>estafet-openshift-boost-console-api-jira</name>
 
 	<parent>
-		<groupId>com.estafet.openshift.boost</groupId>
-		<artifactId>estafet-openshift-boost-springboot-amq</artifactId>
-		<version>1.1.5</version>
+		<groupId>com.estafet.boostcd</groupId>
+		<artifactId>boostcd-springboot-amq</artifactId>
+		<version>1.1.7-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -18,15 +16,15 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.estafet.openshift.boost</groupId>
-			<artifactId>estafet-openshift-boost-commons-lib</artifactId>
-			<version>0.0.13</version>
-		</dependency>					
+			<groupId>com.estafet.boostcd</groupId>
+			<artifactId>commons-lib</artifactId>
+			<version>0.0.16-SNAPSHOT</version>
+		</dependency>			
 		<dependency>
-			<groupId>com.estafet.openshift.boost</groupId>
-			<artifactId>estafet-openshift-boost-messages-lib</artifactId>
-			<version>0.0.31</version>
-		</dependency>
+			<groupId>com.estafet.boostcd</groupId>
+			<artifactId>messages-lib</artifactId>
+			<version>0.0.33-SNAPSHOT</version>
+		</dependency>	
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>

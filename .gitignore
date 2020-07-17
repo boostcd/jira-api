@@ -3,6 +3,7 @@
 /.classpath
 /.project
 /.springBeans
+src/main/java/META-INF
 
 ### IntelliJ IDEA ###
 .idea

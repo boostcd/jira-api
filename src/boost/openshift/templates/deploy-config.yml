@@ -33,10 +33,7 @@ parameters:
   required: true      
 - description: Defines docker registry
   name: DOCKER_IMAGE_LABEL
-  required: true    
-- description: Defines the product that this template is related to
-  name: PRODUCT
-  required: true  
+  required: true     
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
@@ -44,7 +41,6 @@ objects:
     creationTimestamp: null
     labels:
       app: ${MICROSERVICE}
-      product: ${PRODUCT}
     name: ${MICROSERVICE}
     namespace: ${NAMESPACE}
   spec:
@@ -68,12 +64,7 @@ objects:
                 valueFrom:
                   configMapKeyRef:
                     name: ${MICROSERVICE} 
-                    key: TASK_MANAGER
-              - name: PRODUCT
-                valueFrom:
-                  configMapKeyRef:
-                    name: ${MICROSERVICE} 
-                    key: PRODUCT       
+                    key: TASK_MANAGER    
               - name: JIRA_ACCESS_TOKEN
                 valueFrom:
                   secretKeyRef:
@@ -170,7 +161,6 @@ objects:
     creationTimestamp: null
     labels:
       app: ${MICROSERVICE}
-      product: ${PRODUCT}
     name: ${MICROSERVICE}
     namespace: ${NAMESPACE}
   spec:

@@ -13,13 +13,13 @@
 		<dependency>
 			<groupId>com.estafet.boostcd</groupId>
 			<artifactId>commons-lib</artifactId>
-			<version>0.0.16</version>
-		</dependency>			
+			<version>0.0.17-SNAPSHOT</version>
+		</dependency>	
 		<dependency>
 			<groupId>com.estafet.boostcd</groupId>
 			<artifactId>messages-lib</artifactId>
-			<version>0.0.33</version>
-		</dependency>	
+			<version>0.0.34-SNAPSHOT</version>
+		</dependency>		
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>

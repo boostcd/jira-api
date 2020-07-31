@@ -1,6 +1,4 @@
 config_map: 
-  - name: PRODUCT
-    value: "{{ product.name }}"
   - name: TASK_MANAGER
     value: "{{ task_manager.name }}"       
   - name: JIRA_BASE_URL
